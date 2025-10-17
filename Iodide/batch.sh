@@ -1,11 +1,7 @@
 #!/bin/bash
 #SBATCH --ntasks=8
 #SBATCH --partition=long
-#SBATCH --array=1-8
-
-cd ${SLURM_SUBMIT_DIR}
-#SHARED_PATH=$(dirname $(dirname $(realpath $0)))
-#echo "Current dir ${SHARED_PATH}"
+#SBATCH --array=0-7
 
 Th232Gammas=(238.63 727.18 583.19 860.56 2614.53 383.32 911.02 968.97)
 #U238Gammas=(241.91 295.17 351.9 609.31 1120.27 1764.51 1001.00)
