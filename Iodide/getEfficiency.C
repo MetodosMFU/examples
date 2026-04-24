@@ -13,7 +13,7 @@ const std::map<double, double> bRMap = {//Branching ratio
   //Add as many as needed e.g. 238U series, 152Eu, and more...
 };
 
-struct events {int launchedEvents; int simEntries; int peakEvents; };
+struct events {int launchedEvents; int simEntries; int peakEvents; int enEntries; };
 
 const int norm = 100000;
 
@@ -57,16 +57,17 @@ auto files = TRestTools::GetFilesMatchingPattern(filePattern);
     auto peakEvents = dfWithPrecision.Define("ERatio","totalEDepG4/initialEnergyG4").Filter(initECut).Filter("ERatio>0.95").Count();
     auto simEventsEntries = dfWithPrecision.Filter(initECut).Count();
     if((int)*simEventsEntries<10)continue;
-    std::cout<<"Energy "<<initE<<" "<<(int)*peakEvents<<std::endl;
-    events ev ={launchedEvents, (int)*simEventsEntries, (int)*peakEvents};
+    std::cout<<"Energy "<<initE<<" "<<(int)*peakEvents<<"/"<<(int)*simEventsEntries<<std::endl;
+    events ev ={launchedEvents, runEntries, (int)*peakEvents, (int)*simEventsEntries};
 
     auto it2 = eventMap.find(initE);
       if(it2 ==  eventMap.end() ){
         eventMap[initE] = ev;
       } else {
         it2->second.launchedEvents += launchedEvents;
-        it2->second.simEntries += (int)*simEventsEntries;
+        it2->second.simEntries += runEntries;
         it2->second.peakEvents += (int)*peakEvents;
+        it2->second.enEntries += (int)*simEventsEntries;
       }
     }
   }
@@ -75,16 +76,16 @@ auto gr = new TGraphErrors();
 
 int c=0;
   for(const auto& [en, events] : eventMap){
-    cout<<"Energy "<<en<<" keV: "<<" Launched events: "<<events.launchedEvents<<"; detected events: "<<events.simEntries<<"; peak events: "<<events.peakEvents<<endl;
-    cout<<"Geometry efficiency: "<<double(events.simEntries)/events.launchedEvents<<"+/-"<<sqrt(events.simEntries)/events.launchedEvents<<"; Peak efficiency "<<double(events.peakEvents)/events.simEntries<<"+/-"<<sqrt(events.peakEvents)/events.simEntries<<"; Total efficiency :"<<double(events.peakEvents)/events.launchedEvents<<"+/-"<<sqrt(events.peakEvents)/events.launchedEvents<<endl;
-    gr->SetPoint(c,en,double(events.peakEvents)/events.simEntries);
-    gr->SetPointError(c,0,sqrt(events.peakEvents)/events.simEntries);
+    cout<<"Energy "<<en<<" keV: "<<" Launched events: "<<events.launchedEvents<<"; run entries: "<< events.enEntries <<"/"<< events.simEntries<<"; peak events: "<<events.peakEvents<<endl;
+    cout<<"Geometry efficiency: "<<double(events.enEntries)/events.launchedEvents<<"+/-"<<sqrt(events.enEntries)/events.launchedEvents<<"; Peak efficiency "<<double(events.peakEvents)/events.enEntries<<"+/-"<<sqrt(events.peakEvents)/events.enEntries<<"; Total efficiency :"<<double(events.peakEvents)/events.launchedEvents<<"+/-"<<sqrt(events.peakEvents)/events.launchedEvents<<endl;
+    gr->SetPoint(c,en,double(events.peakEvents)/events.launchedEvents);
+    gr->SetPointError(c,0,sqrt(events.peakEvents)/events.launchedEvents);
     c++;
   }
 
 TCanvas *effCan = new TCanvas("effCan","effCan");
 gr->GetXaxis()->SetTitle("Energy (keV)");
-gr->GetYaxis()->SetTitle("Peak Efficiency");
+gr->GetYaxis()->SetTitle("Total Efficiency");
 gr->Draw();
 
 TCanvas *spcCan = new TCanvas("spcCan","spcCan");
