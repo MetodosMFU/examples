@@ -43,21 +43,32 @@ auto files = TRestTools::GetFilesMatchingPattern(filePattern);
     } else{
       br = it->second; 
     }
+
   spectra->Add(hist->DrawCopy(),br*norm/launchedEvents);
 
-  auto peakEvents = df.Define("ERatio","totalEDepG4/initialEnergyG4").Filter("ERatio>0.95").Count();
+  auto dfWithPrecision = df.Define("energyRounded", "std::round(initialEnergyG4 * 10.0) / 10.0");
+  auto energyList = dfWithPrecision.Take<double>("energyRounded");
+  std::vector<double> uniqueEnergies = *energyList;
+  std::sort(uniqueEnergies.begin(), uniqueEnergies.end());
+  uniqueEnergies.erase(std::unique(uniqueEnergies.begin(), uniqueEnergies.end()), uniqueEnergies.end());
 
-  events ev ={launchedEvents, runEntries, (int)*peakEvents};
-  
-  auto it2 = eventMap.find(eInit);
-    if(it2 ==  eventMap.end() ){
-      eventMap[eInit] = ev;
-    } else {
-      it2->second.launchedEvents += launchedEvents;
-      it2->second.simEntries += runEntries;
-      it2->second.peakEvents += (int)*peakEvents;
+  for (const auto &initE : uniqueEnergies){
+    std::string initECut = "energyRounded == "+std::to_string(initE);
+    auto peakEvents = dfWithPrecision.Define("ERatio","totalEDepG4/initialEnergyG4").Filter(initECut).Filter("ERatio>0.95").Count();
+    auto simEventsEntries = dfWithPrecision.Filter(initECut).Count();
+    if((int)*simEventsEntries<10)continue;
+    std::cout<<"Energy "<<initE<<" "<<(int)*peakEvents<<std::endl;
+    events ev ={launchedEvents, (int)*simEventsEntries, (int)*peakEvents};
+
+    auto it2 = eventMap.find(initE);
+      if(it2 ==  eventMap.end() ){
+        eventMap[initE] = ev;
+      } else {
+        it2->second.launchedEvents += launchedEvents;
+        it2->second.simEntries += (int)*simEventsEntries;
+        it2->second.peakEvents += (int)*peakEvents;
+      }
     }
-
   }
 
 auto gr = new TGraphErrors();
