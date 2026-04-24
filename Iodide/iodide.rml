@@ -16,7 +16,7 @@
         <parameter name="verboseLevel" value="warning" />
     </globals>
 
-    <TRestGeant4Metadata name="restG4 run"  title="${GENERATOR}_${ENERGY}keV">
+    <TRestGeant4Metadata name="restG4 run"  title="${GENERATOR}_${GEN_PAR}">
 
         <parameter name="gdml_file" value="geometry/setup.gdml"/>
         <parameter name="subEventTimeDelay" value="100us" />
@@ -28,7 +28,7 @@
           <generator type="surface" shape="wall" size="(0,0,0)" position="(0,0,0)" rotation="(0,0,0)" >
                 <source particle="gamma">
                 <angular type="isotropic"/>
-                <energy type="mono" energy="${ENERGY}" units="keV"/>
+                <energy type="mono" energy="${GEN_PAR}" units="keV"/>
            </source>
         </generator>
         </if>
@@ -36,24 +36,40 @@
           <generator type="surface" shape="wall" size="(0,0,0)" position="(0,0,-25)" rotation="(0,0,0)" >
                 <source particle="gamma">
                 <angular type="isotropic"/>
-                <energy type="mono" energy="${ENERGY}" units="keV"/>
+                <energy type="mono" energy="${GEN_PAR}" units="keV"/>
            </source>
         </generator>
         </if>
-        <if condition="${GENERATOR}==Detector">
+        <if condition="${GENERATOR}==DetectorGamma">
            <generator type="volume" from="detector" >
                 <source particle="gamma">
                 <angular type="isotropic"/>
-                <energy type="mono" energy="${ENERGY}" units="keV"/>
+                <energy type="mono" energy="${GEN_PAR}" units="keV"/>
            </source>
+        </generator>
+        </if>
+        <if condition="${GENERATOR}==DetectorIsotope">
+           <generator type="volume" from="detector" >
+                <source particle="${GEN_PAR}" fullChain="on">
+                <angular type="isotropic"/>
+                <energy type="mono" energy="0keV"/>
+            </source>
         </generator>
         </if>
         <if condition="${GENERATOR}==EnvironmentalGamma">
           <generator type="surface" shape="sphere" size="(1000,0,0)" position="(0,0,0)" rotation="(0,0,0)" >
                 <source particle="gamma">
                 <angular type="isotropic"/>
-                <energy type="mono" energy="${ENERGY}" units="keV"/>
+                <energy type="mono" energy="${GEN_PAR}" units="keV"/>
            </source>
+        </generator>
+        </if>
+        <if condition="${GENERATOR}==Source">
+          <generator type="surface" shape="wall" size="(0,0,0)" position="(0,0,-25)" rotation="(0,0,0)" >
+                <source particle="${GEN_PAR}" fullChain="on">
+                <angular type="isotropic"/>
+                <energy type="mono" energy="0keV"/>
+            </source>
         </generator>
         </if>
 
