@@ -9,7 +9,8 @@ const std::map<double, double> bRMap = {//Branching ratio
   {2614.53, 0.026},
   {383.32, 0.1127},
   {911.02, 0.258},
-  {968.97, 0.158}
+  {968.97, 0.158},
+  {662, 0.85} //137Cs
   //Add as many as needed e.g. 238U series, 152Eu, and more...
 };
 
@@ -77,7 +78,7 @@ auto gr = new TGraphErrors();
 int c=0;
   for(const auto& [en, events] : eventMap){
     cout<<"Energy "<<en<<" keV: "<<" Launched events: "<<events.launchedEvents<<"; run entries: "<< events.enEntries <<"/"<< events.simEntries<<"; peak events: "<<events.peakEvents<<endl;
-    cout<<"Geometry efficiency: "<<double(events.enEntries)/events.launchedEvents<<"+/-"<<sqrt(events.enEntries)/events.launchedEvents<<"; Peak efficiency "<<double(events.peakEvents)/events.enEntries<<"+/-"<<sqrt(events.peakEvents)/events.enEntries<<"; Total efficiency :"<<double(events.peakEvents)/events.launchedEvents<<"+/-"<<sqrt(events.peakEvents)/events.launchedEvents<<endl;
+    cout<<"Geometry efficiency: "<<double(events.enEntries)/events.launchedEvents<<"+/-"<<sqrt(events.enEntries)/events.launchedEvents<<"; Peak efficiency "<<double(events.peakEvents)/events.enEntries<<"+/-"<<(double)events.peakEvents/events.enEntries*sqrt(1./(double)events.peakEvents + 1./(double)events.enEntries)<<"; Total efficiency :"<<double(events.peakEvents)/events.launchedEvents<<"+/-"<<sqrt(events.peakEvents)/events.launchedEvents<<endl;
     gr->SetPoint(c,en,double(events.peakEvents)/events.launchedEvents);
     gr->SetPointError(c,0,sqrt(events.peakEvents)/events.launchedEvents);
     c++;
