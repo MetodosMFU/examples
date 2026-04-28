@@ -54,6 +54,7 @@ auto files = TRestTools::GetFilesMatchingPattern(filePattern);
   uniqueEnergies.erase(std::unique(uniqueEnergies.begin(), uniqueEnergies.end()), uniqueEnergies.end());
 
   for (const auto &initE : uniqueEnergies){
+    if(initE<1)continue;
     std::string initECut = "energyRounded == "+std::to_string(initE);
     auto peakEvents = dfWithPrecision.Define("ERatio","totalEDepG4/initialEnergyG4").Filter(initECut).Filter("ERatio>0.95").Count();
     auto simEventsEntries = dfWithPrecision.Filter(initECut).Count();

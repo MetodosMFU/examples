@@ -32,14 +32,6 @@
            </source>
         </generator>
         </if>
-        <if condition="${GENERATOR}==CalibrationEu152">
-          <generator type="surface" shape="wall" size="(0,0,0)" position="(0,0,-25)" rotation="(0,0,0)" >
-                <source particle="gamma">
-                <angular type="isotropic"/>
-                <energy type="mono" energy="${GEN_PAR}" units="keV"/>
-           </source>
-        </generator>
-        </if>
         <if condition="${GENERATOR}==DetectorGamma">
            <generator type="volume" from="detector" >
                 <source particle="gamma">

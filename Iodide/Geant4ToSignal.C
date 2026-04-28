@@ -106,12 +106,11 @@ for (const auto &inputFile : files){
     for (unsigned int trackIndex = 0; trackIndex < nTracks; trackIndex++) {
       const auto trackG4 = g4Event->GetTrackPointer(trackIndex);
       const std::string particleName = trackG4->GetParticleName().Data();
-      if(initialEnergyG4==0 && particleName =="gamma")initialEnergyG4 = trackG4->GetInitialKineticEnergy();
-      
       const auto hits = trackG4->GetHits();
       const auto nHits = hits.GetNumberOfHits();
         for (unsigned int n = 0; n < nHits; n++) {
           if( hits.GetVolumeId(n) != sensitiveVolID)continue;
+          if(initialEnergyG4==0 && particleName =="gamma")initialEnergyG4 = trackG4->GetInitialKineticEnergy();
           const double energy = hits.GetEnergy(n);
           if (energy <= 0)continue;
           const TVector3& position = hits.GetPosition(n);

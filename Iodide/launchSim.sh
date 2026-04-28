@@ -15,8 +15,8 @@ helpFunction()
 #Materials G4_CESIUM_IODIDE, G4_POTASSIUM_IODIDE,...
 export SCINTILLATOR_MATERIAL="G4_CESIUM_IODIDE"
 
-# CalibrationGamma, CalibrationEu152, DetectorGamma, EnvironmentalGamma, DetectorIsotope, Source
-export GENERATOR="DetectorIsotope"
+# CalibrationGamma, DetectorGamma, EnvironmentalGamma, DetectorIsotope, Source
+export GENERATOR="Source"
 
 # Gamma energy in keV (CalibrationGamma, CalibrationEu152, DetectorGamma, EnvironmentalGamma, )
 # or isotope (DetectorIsotope, Source) e.g. K40, Co60, Cs137
@@ -31,13 +31,15 @@ if [[ "$1" == "single" ]] then
   eval "restG4 ${SCRIPTPATH}/iodide.rml -e ${SEVENTS}"
 elif [[ "$1" == "multiple" ]] then
 
+export GENERATOR="CalibrationGamma"
+
 #Note take into account the branching ratio (energy in keV)
 Th232Gammas=(238.63 727.18 583.19 860.56 2614.53 383.32 911.02 968.97)
 U238Gammas=(241.91 295.17 351.9 609.31 1120.27 1764.51 1001.00)
 Eu152Gammas=(121.7817 244.6974 295.9387 344.2785 367.7891 411.1165 443.965 563.99 688.67 778.9045 867.38 964.079 1085.837 1089.737 1112.076 1212.948 1299.142 1408.013)
 Internal=("K40" "Co60")
 
-  for N in ${Internal[@]}
+  for N in ${Th232Gammas[@]}
   do
     export GEN_PAR="$N"
     echo "Generator param $GEN_PAR"
