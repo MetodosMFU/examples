@@ -1,0 +1,57 @@
+<solids>
+    <box name="WorldSolid" x="world_size" y="world_size" z="world_size" lunit="mm"/>
+    <tube name="detectorSolid" startphi="0" deltaphi="360" rmin="0" rmax="detectorRadius" z="detectorHeight" aunit="deg" lunit="mm" />
+    <tube name="detectorCoverSolid" startphi="0" deltaphi="360" rmin="detectorRadius" rmax="detectorRadius+coverThickness" z="detectorHeight" aunit="deg" lunit="mm" />
+    <tube name="detectorTapeSolid" startphi="0" deltaphi="360" rmin="0" rmax="detectorRadius+coverThickness" z="coverThickness" aunit="deg" lunit="mm" />
+</solids>
+
+<structure>
+
+   <!-- {{{ Volumes definition (material and solid assignment) -->
+
+    <volume name="detectorVolume">
+        <materialref ref="${SCINTILLATOR_MATERIAL}"/>
+        <solidref ref="detectorSolid"/>
+    </volume>
+
+    <volume name="detectorCoverVolume">
+        <materialref ref="Aluminium"/>
+        <solidref ref="detectorCoverSolid"/>
+    </volume>
+    
+    <volume name="detectorTapeVolume">
+        <materialref ref="Aluminium"/>
+        <solidref ref="detectorTapeSolid"/>
+    </volume>
+    <!-- }}} -->
+
+    <!-- {{{ Physical volume definition (volume and position assignment) -->
+
+        <volume name="World">
+        <materialref ref="Air"/>
+        <solidref ref="WorldSolid"/>
+
+        <physvol name="detector">
+            <volumeref ref="detectorVolume"/>
+            <position name="detectorPosition" x="0" y="0" z="(detectorHeight+coverThickness)/2.+coverThickness/2." unit="mm"/>
+        </physvol>
+
+        <physvol name="detectorCover">
+            <volumeref ref="detectorCoverVolume"/>
+            <position name="detectorCoverPosition" x="0" y="0" z="(detectorHeight+coverThickness)/2.+coverThickness/2." unit="mm"/>
+        </physvol>
+
+        <physvol name="detectorTape">
+            <volumeref ref="detectorTapeVolume"/>
+            <position name="detectorTapePosition" x="0" y="0" z="coverThickness/2." unit="mm"/>
+        </physvol>
+        <physvol name="detectorTapeBack">
+            <volumeref ref="detectorTapeVolume"/>
+            <position name="detectorTapeBackPosition" x="0" y="0" z="detectorHeight+coverThickness+coverThickness/2." unit="mm"/>
+        </physvol>
+
+   </volume>
+   <!-- }}} -->
+
+</structure>
+
