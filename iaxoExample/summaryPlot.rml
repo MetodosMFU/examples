@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<TRestManager name="tckAna" title="TckAna" verboseLevel="info" >
+
+	<TRestDataSetPlot name="restplot" title="Basic Plots" previewPlot="true" canvasSize="(1200,800)" canvasDivisions="(3,1)" verboseLevel="info">
+
+
+           <addCut name="nTracks"/>
+
+           <TRestCut name="nTracks" verboseLevel="info">
+              <cut name="c1" variable="tckAna_nTracks_X" condition=">0" />
+              <cut name="c2" variable="tckAna_nTracks_Y" condition=">0" />
+           </TRestCut>
+           
+           <TRestCut name="TrackBalance" verboseLevel="info">
+              <cut name="c3" variable="tckAna_MaxTrackEnergyRatio" condition="<0.1" />
+           </TRestCut>
+
+
+              <panel font_size="0.05" precision="3">
+                  <metadata value="[TRestRun::fRunNumber]" label="Run number" x="0.25" y="0.9" />
+                  <variable value="[[startTime]]" label="Data starts" x="0.25" y="0.74" />
+                  <variable value="[[endTime]]" label ="Data ends" x="0.25" y="0.66" />
+                  <variable value="[[entries]]" label="Entries" x="0.25" y="0.58" />
+             </panel>
+
+		<plot name="HitMap" title="Hitmap" xlabel="X [mm]" ylabel="Y [mm]"  save="" value="ON" stats="OFF" option="COLZ" >
+			<variable name="tckAna_MaxTrack_Xmean_X" range="(-30,30)" nbins="120" />
+			<variable name="tckAna_MaxTrack_Ymean_Y" range="(-30,30)" nbins="120" />
+		</plot>
+
+		<plot name="Spectra" title="Spectra" xlabel="Amplitude(ADC)" ylabel="Counts" 
+			legend="ON"  value="ON" annotation="OFF" >
+				<variable name="tckAna_MaxTrackEnergy" range="(0,30000)" nbins="512" />
+		</plot>
+
+	</TRestDataSetPlot>
+
+	<addTask command="restplot->PlotCombinedCanvas()" value="ON"/>
+
+</TRestManager>
+
+

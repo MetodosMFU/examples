@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<TRestManager>
+
+<globals>
+    <variable name="NPOINTS" value="7" overwrite="false" />
+    <variable name="POINT_TH" value="2.2" overwrite="false" />
+    <variable name="SGNL_TH" value="1" overwrite="false" />
+    <variable name="BL_MIN" value="20" overwrite="false" />
+    <variable name="BL_MAX" value="100" overwrite="false" />
+    <variable name="INT_MIN" value="100" overwrite="false" />
+    <variable name="INT_MAX" value="500" overwrite="false" />
+    <variable name="DRIFT_FIELD" value="100" overwrite="false" />
+    <variable name="PRESSURE" value="1.4" overwrite="false" />
+    <parameter name="channelType" value="tpc"/> 
+</globals>
+
+<TRestRun name="IAXOD1" title="Simulation Processing">
+        <parameter name="experimentName" value="IAXO"/>
+        <parameter name="readOnly" value="false"/>
+        <parameter name="runNumber" value="preserve"/>
+        <parameter name="runTag" value="preserve"/>
+        <parameter name="runType" value="preserve"/>
+        <parameter name="runDescription" value=""/>
+        <parameter name="user" value="${USER}"/>
+        <parameter name="verboseLevel" value="1"/>
+        <parameter name="overwrite" value="off"/>
+        <parameter name="inputFormat" value="Run[fRunNumber]_restG4_[fRunTag]_[fRunUser].root"/>
+        <parameter name="outputFileName" value="Run[fRunNumber]_TRACK_[fRunTag]_[fRunUser].root" />
+
+        <addMetadata type="TRestDetectorReadout" name="iaxoD1Readout"
+                     file="readoutMicromegas.root"/>
+</TRestRun>
+
+<!--TRestDetectorGas name="Xenon-Neon 48.85Pct-Iso 2.3Pct 10-10E3Vcm" pressure="1.05" file="server"/-->
+<TRestDetectorGas name="Argon-Isobutane 2.3Pct 10-10E3Vcm" pressure="1.4" file="server" />
+    <TRestProcessRunner name="geant4ToTracks" verboseLevel="info">
+        <parameter name="eventsToProcess" value="0"/>
+        <parameter name="threadNumber" value="1"/>
+
+        <parameter name="inputAnalysisStorage" value="on"/>
+        <parameter name="inputEventStorage" value="on"/>
+        <parameter name="outputEventStorage" value="on"/>
+
+        <addProcess type="TRestGeant4AnalysisProcess" name="g4Ana" observable="all"/>
+
+	<addProcess type="TRestGeant4ToDetectorHitsProcess" name="Geant4ToDetectorHits" value="ON">     <!-- Change event type. Gives their TPC or VETO type to the hits -->
+            <volume name="detector"/>
+        </addProcess>
+ 
+        <addProcess type="TRestDetectorHitsRotationProcess" name="hitsRotationBefore" value="ON">     <!-- Mandatory to correct readout position -->
+            <parameter name="center" value="(0,0,0)mm"/>
+            <parameter name="axis" value="(0,0,1)"/>
+            <parameter name="angle" value="45deg"/>     <!-- Double check if this should be + or - -->
+        </addProcess>
+
+	<addProcess type="TRestDetectorElectronDiffusionProcess" name="eDiff" value="ON" >
+	    <parameter name="attachment" value="0" />
+	    <parameter name="Wvalue" value="30" units="eV" />
+            <parameter name="maxHits" value="10000" />
+	</addProcess>
+
+	 <addProcess type="TRestDetectorHitsSmearingProcess" name="smearingTPC" value="ON">
+            <parameter name="channelType" value="tpc"/>
+            <parameter name="energyRef" value="5.9keV"/>
+            <parameter name="resolutionAtERef" value="15"/>
+        </addProcess>
+
+	
+	<addProcess type="TRestDetectorHitsToSignalProcess" name="hitsToSignal" title="A hits to signal template" value="ON" >
+		<parameter name="electricField" value="${DRIFT_FIELD}" units="V/cm" />
+                <parameter name="gasPressure" value="${PRESSURE}" />
+                <parameter name="sampling" value="20ns" />
+	</addProcess>
+
+	<addProcess type="TRestDetectorSignalToRawSignalProcess" name="DetectorSignalToRaw" value="ON">
+            <parameter name="nPoints" value="512"/>
+            <parameter name="triggerMode" value="integralThresholdTPC"/>
+            <parameter name="triggerDelay" value="128"/>
+            <parameter name="integralThresholdTPCkeV" value="0.001"/>
+            <observable name="triggerTimeTPC" value="ON"/>
+            <parameter name="readoutTypes" value="tpc"/>
+
+            <parameter name="samplingTpc" value="20ns"/>
+            <parameter name="shapingTimeTpc" value="1500ns"/>
+            <parameter name="calibrationEnergyTpc" value="(0,15)keV"/>
+            <parameter name="calibrationRangeTpc" value="(0.05,0.5)"/>
+        </addProcess>
+
+	<addProcess type="TRestRawToDetectorSignalProcess" name="zS" value="ON">
+                <parameter name="sampling" value="20ns" />
+                <parameter name="integralRange" value="(${INT_MIN},${INT_MAX})" />
+                <parameter name="pointThreshold" value="${POINT_TH}" />
+                <parameter name="nPointsOverThreshold" value="${NPOINTS}" />
+                <parameter name="signalThreshold" value="${SGNL_TH}" />
+                <parameter name="zeroSuppression" value="true" />
+                <parameter name="signalSmoothing" value="true" />
+                <parameter name="averagingPoints" value="5" />
+         </addProcess>
+
+	<addProcess type="TRestDetectorSignalToHitsProcess" name="signalToHits" value="ON">
+                <parameter name="sampling" value="20ns" />
+                <parameter name="electricField" value="${DRIFT_FIELD}" units="V/cm" />
+                <parameter name="gasPressure" value="${PRESSURE}" />
+                <!--parameter name="triggerDelay" value="4000ns" /-->
+        </addProcess>
+
+	<addProcess type="TRestDetectorHitsToTrackProcess" name="hitsToTrack" title="" value="ON" clusterDistance="3.5mm" />
+	<addProcess type="TRestTrackAnalysisProcess" name="tckAna" value="ON" observable="all"/>
+
+    </TRestProcessRunner>
+
+    <addTask type="processEvents" value="ON"/>
+
+</TRestManager>

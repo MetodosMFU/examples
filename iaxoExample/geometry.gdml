@@ -1,0 +1,77 @@
+<solids>
+    <box name="WorldSolid" x="world_size" y="world_size" z="world_size" lunit="mm"/>
+    <tube name="detectorSolid" startphi="0" deltaphi="360" rmin="0" rmax="detectorRadius" z="detectorHeight" aunit="deg" lunit="mm" />
+    <tube lunit="mm" aunit="deg" name="cathodeWindowMylarSolid" rmax="15.0" z="0.00396" rmin="0.0" startphi="0.0" deltaphi="360"/>
+        <tube lunit="mm" aunit="deg" name="cathodeWindowAluminiumSolid" rmax="15.0" z="4.0E-5" rmin="0.0" startphi="0.0" deltaphi="360"/>
+        <tube lunit="mm" aunit="deg" name="cathodeCopperDiskSolid" rmax="45.0" z="1.0" rmin="8.5" startphi="0.0" deltaphi="360"/>
+        <box lunit="mm" aunit="deg" name="cathodePatternLineAux" x="0.3" y="17.0" z="1.0"/>
+        <tube lunit="mm" aunit="deg" name="cathodePatternCentralHole" rmax="4.25" z="1.1" rmin="0.0" startphi="0.0" deltaphi="360"/>
+        <subtraction lunit="mm" aunit="deg" name="cathodePatternLine">
+            <first ref="cathodePatternLineAux"/>
+            <second ref="cathodePatternCentralHole"/>
+        </subtraction>
+        <tube lunit="mm" aunit="deg" name="cathodePatternDisk" rmax="4.25" z="1.0" rmin="3.95" startphi="0.0" deltaphi="360"/>
+        <union lunit="mm" aunit="deg" name="cathodeCopperDiskSolidAux0">
+            <rotation name="cathodeCopperDiskSolidAux0.rotation" unit="deg"/>
+            <first ref="cathodeCopperDiskSolid"/>
+            <second ref="cathodePatternLine"/>
+        </union>
+        <union lunit="mm" aunit="deg" name="cathodeCopperDiskSolidAux1">
+            <rotation name="cathodeCopperDiskSolidAux1.rotation" z="45.0" unit="deg"/>
+            <first ref="cathodeCopperDiskSolidAux0"/>
+            <second ref="cathodePatternLine"/>
+        </union>
+        <union lunit="mm" aunit="deg" name="cathodeCopperDiskSolidAux2">
+            <rotation name="cathodeCopperDiskSolidAux2.rotation" z="90.0" unit="deg"/>
+            <first ref="cathodeCopperDiskSolidAux1"/>
+            <second ref="cathodePatternLine"/>
+        </union>
+        <union lunit="mm" aunit="deg" name="cathodeCopperDiskSolidAux3">
+            <rotation name="cathodeCopperDiskSolidAux3.rotation" z="135.0" unit="deg"/>
+            <first ref="cathodeCopperDiskSolidAux2"/>
+            <second ref="cathodePatternLine"/>
+        </union>
+        <union lunit="mm" aunit="deg" name="cathodeCopperDiskFinal.solid">
+            <first ref="cathodeCopperDiskSolidAux3"/>
+            <second ref="cathodePatternDisk"/>
+        </union>
+</solids>
+
+<structure>
+
+   <!-- {{{ Volumes definition (material and solid assignment) -->
+
+    <volume name="detectorVolume">
+        <materialref ref="Argon2%Isobutane1.4bar"/>
+        <solidref ref="detectorSolid"/>
+    </volume>
+
+    <volume name="cathodeCopperDiskFinal">
+        <materialref ref="G4_Cu"/>
+        <solidref ref="cathodeCopperDiskFinal.solid"/>
+    </volume>
+        
+        
+    <!-- }}} -->
+
+    <!-- {{{ Physical volume definition (volume and position assignment) -->
+
+        <volume name="World">
+        <materialref ref="Vacuum"/>
+        <solidref ref="WorldSolid"/>
+
+        <physvol name="detector">
+            <volumeref ref="detectorVolume"/>
+            <position name="detectorPosition" x="0" y="0" z="0" unit="mm"/>
+        </physvol>
+
+        <physvol name="cathodeCopperDiskPattern">
+            <volumeref ref="cathodeCopperDiskFinal"/>
+            <position name="cathodeCopperDiskPattern.position" z="15.5" unit="mm"/>
+        </physvol>
+
+   </volume>
+   <!-- }}} -->
+
+</structure>
+
