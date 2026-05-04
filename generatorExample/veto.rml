@@ -45,7 +45,8 @@
 
         <detector>
             <parameter name="energyRange" value="(1,1000000)keV"/>
-            <volume name="detector" sensitive="true" chance="1" maxStepSize="0.1mm"/>
+            <volume name="veto1" sensitive="true" chance="1" maxStepSize="0.1mm"/>
+            <volume name="veto2" sensitive="true" chance="1" maxStepSize="0.1mm"/>
         </detector>
     </TRestGeant4Metadata>
 
@@ -81,6 +82,7 @@
     <physicsList name="G4EmExtraPhysics"> </physicsList>
 
 </TRestGeant4PhysicsLists> 
+
 
 </restG4>
 

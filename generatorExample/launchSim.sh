@@ -15,9 +15,6 @@ else
   helpFunction
 fi
 
-#Materials G4_CESIUM_IODIDE, G4_POTASSIUM_IODIDE,...
-export SCINTILLATOR_MATERIAL="G4_CESIUM_IODIDE"
-
 # CalibrationGamma, DetectorGamma, EnvironmentalGamma, DetectorIsotope, Source
 export GENERATOR=$1
 
@@ -26,7 +23,7 @@ export SEVENTS=1000
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-eval "restG4 ${SCRIPTPATH}/iodide.rml -e ${SEVENTS}"
+eval "restG4 ${SCRIPTPATH}/veto.rml -e ${SEVENTS}"
 
 
 

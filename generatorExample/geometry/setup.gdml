@@ -10,10 +10,7 @@
 <!-- Definition of global variables: All values should be in mm -->
 
      <define>
-       <variable name="world_size" value="20000"/>
-       <variable name="detectorRadius" value="250"/>
-       <variable name="detectorHeight" value="500"/>
-       <variable name="coverThickness" value="5"/>
+       <variable name="world_size" value="5000"/>
     </define>
 
     &materials;
