@@ -50,11 +50,14 @@ for (const auto &inputFile : files){
   inputRun.PrintMetadata();
 
   TRestGeant4Metadata* G4Metadata = static_cast<TRestGeant4Metadata*>(inputRun.GetMetadataClass("TRestGeant4Metadata"));
+  std::cout<<"Generator surface "<<G4Metadata->GetGeant4PrimaryGeneratorInfo().GetSpatialGeneratorCosmicSurfaceTermCm2()<<" cm^2"<<endl;
   std::vector<int> sensitiveVolumeID;
   for (const auto& userVolume : sensitiveVolume) {
     //cout<<userVolume<<" "<<G4Metadata->GetActiveVolumeID(userVolume)<<endl;
-    if (G4Metadata->GetActiveVolumeID(userVolume) >= 0) {
-      sensitiveVolumeID.push_back(G4Metadata->GetActiveVolumeID(userVolume));
+    const auto volumeID = G4Metadata->GetActiveVolumeID(userVolume);
+    if (volumeID >= 0) {
+      sensitiveVolumeID.push_back(volumeID);
+      cout<<"Volume: "<<userVolume<<" ID: "<<volumeID<<endl;
     } else
       cout << "TRestGeant4ToDetectorHitsProcess. volume name : " << userVolume
            << " not found and will not be added." << endl;
