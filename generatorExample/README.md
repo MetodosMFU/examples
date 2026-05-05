@@ -35,4 +35,20 @@ Note add as many sensitive volume as you need:
 ```
 
 
-# Analysis TBA
+# Analysis [Geant4ToSignal.C](generatorExample/Geant4ToSignal.C)
+
+Note that now we have one signal per veto, this has been taken into account for the analysis. Update this field with the volume names used in the simulation:
+```
+const std::vector<std::string> sensitiveVolume={"veto1","veto2"};//Add as many as you want
+```
+Now you have one signal per veto, signalID is the volume ID:
+<img width="511" height="320" alt="image" src="https://github.com/user-attachments/assets/20b0fb62-9883-40a8-8471-7f94992b77e9" />
+
+Observables from the signal analysis are stored as a `std::map<int, value>`, where the first index is the signalID (volumeID), to get the info from the different observables check the macro [getObservable.C](generatorExample/getObservable.C), which provides examples on how to access the data using `TRestRun` and `RDataFrame`
+
+Check generator info to obtain the surface of the generator used in the simulation (it should be always the same for a given world size), you should use this value to normalize the muon rate together with the differential spectra at [cosmics.root](generatorExample/cosmics.root).
+```
+RestGeant4Metadata* G4Metadata = static_cast<TRestGeant4Metadata*>(inputRun.GetMetadataClass("TRestGeant4Metadata"));
+  std::cout<<"Generator surface "<<G4Metadata->GetGeant4PrimaryGeneratorInfo().GetSpatialGeneratorCosmicSurfaceTermCm2()<<" cm^2"<<endl;
+```
+
